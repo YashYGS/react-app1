@@ -20,7 +20,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-
+import { SelectChangeEvent } from "@mui/material";
 // Define types
 type Application = {
   id: number;
@@ -86,9 +86,16 @@ function App() {
     return company ? company.name : "Unknown Company";
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setNewApplication({ ...newApplication, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>
+  ) => {
+    const { name, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
+    setNewApplication({ ...newApplication, [name]: value });
   };
+
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   setNewApplication({ ...newApplication, [e.target.name]: e.target.value });
+  // };
 
   const handleSubmit = () => {
     const formattedApplication = {
@@ -237,20 +244,20 @@ function App() {
                         <FormControl fullWidth margin="normal">
                           <InputLabel>Company</InputLabel>
                           <Select
-                            name="company_id"
-                            value={newApplication.company_id}
-                            onChange={handleChange}
-                            required
-                          >
-                            <MenuItem value="">
-                              <em>Select Company</em>
-                            </MenuItem>
-                            {companies.map((company) => (
-                              <MenuItem key={company.id} value={company.id}>
-                                {company.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
+  name="company_id"
+  value={newApplication.company_id}
+  onChange={handleChange}
+  required
+>
+  <MenuItem value="">
+    <em>Select Company</em>
+  </MenuItem>
+  {companies.map((company) => (
+    <MenuItem key={company.id} value={company.id}>
+      {company.name}
+    </MenuItem>
+  ))}
+</Select>
                         </FormControl>
                         <TextField
                           fullWidth

@@ -1,6 +1,25 @@
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Report from "./Report";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Grid,
+  Paper,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+} from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 
 // Define types
 type Application = {
@@ -23,62 +42,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [editingApplication, setEditingApplication] = useState<Application | null>(null);
   const [statuses, setStatuses] = useState<{ id: number; status_name: string }[]>([]);
-
-  useEffect(() => {
-    console.log("Fetching applications...");
-    fetch("http://localhost:5000/applications")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Fetched applications:", data);
-        setApplications(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching applications:", error);
-        setError(error.message);
-      });
-
-    console.log("Fetching companies...");
-    fetch("http://localhost:5000/companies")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Fetched companies:", data);
-        setCompanies(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching companies:", error);
-      });
-
-      console.log("Fetching statuses...");
-      fetch("http://localhost:5000/statuses")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Fetched statuses:", data);
-          setStatuses(data);
-        })
-        .catch((error) => console.error("Error fetching statuses:", error));
-  }, []);
-
-  // Function to get company name from company_id
-  const getCompanyName = (company_id: number) => {
-    const company = companies.find((c) => c.id === company_id);
-    return company ? company.name : "Unknown Company";
-  };
-
   const [newApplication, setNewApplication] = useState({
     company_id: "",
     job_title: "",
@@ -86,27 +49,59 @@ function App() {
     notes: "",
   });
 
-  // Function to handle input changes
+  useEffect(() => {
+    fetch("http://localhost:5000/applications")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => setApplications(data))
+      .catch((error) => setError(error.message));
+
+    fetch("http://localhost:5000/companies")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => setCompanies(data))
+      .catch((error) => console.error("Error fetching companies:", error));
+
+    fetch("http://localhost:5000/statuses")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => setStatuses(data))
+      .catch((error) => console.error("Error fetching statuses:", error));
+  }, []);
+
+  const getCompanyName = (company_id: number) => {
+    const company = companies.find((c) => c.id === company_id);
+    return company ? company.name : "Unknown Company";
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setNewApplication({ ...newApplication, [e.target.name]: e.target.value });
   };
 
-  // Function to submit new application
   const handleSubmit = () => {
-    console.log("Submit button clicked");
     const formattedApplication = {
       ...newApplication,
-      company_id: Number(newApplication.company_id), // Convert to number
-      status_id: Number(newApplication.status_id), // Convert to number
+      company_id: Number(newApplication.company_id),
+      status_id: Number(newApplication.status_id),
     };
-  
+
     const url = editingApplication
       ? `http://localhost:5000/applications/${editingApplication.id}`
       : "http://localhost:5000/applications";
     const method = editingApplication ? "PUT" : "POST";
-  
-    console.log("Submitting application:", formattedApplication, "Method:", method);
-  
+
     fetch(url, {
       method: method,
       headers: {
@@ -121,7 +116,6 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        console.log("Success:", data);
         if (editingApplication) {
           setApplications(
             applications.map((app) =>
@@ -147,9 +141,7 @@ function App() {
       .catch((error) => console.error("Error submitting application:", error));
   };
 
-  // Function to handle edit button click
   const handleEdit = (application: Application) => {
-    console.log("Edit button clicked for application:", application);
     setEditingApplication(application);
     setNewApplication({
       company_id: application.company_id.toString(),
@@ -158,15 +150,13 @@ function App() {
       notes: application.notes,
     });
   };
-  // Function to handle delete button click
+
   const handleDelete = (id: number) => {
-    console.log("Delete button clicked for application ID:", id);
     fetch(`http://localhost:5000/applications/${id}`, {
       method: "DELETE",
     })
       .then((response) => {
         if (response.ok) {
-          console.log("Application deleted successfully");
           setApplications(applications.filter((app) => app.id !== id));
         } else {
           console.error("Failed to delete application");
@@ -178,53 +168,138 @@ function App() {
   return (
     <Router>
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/report">Report</Link>
-            </li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route path="/report" element={<Report />} />
-          <Route path="/" element={
-            <div>
-              <h1>Job Applications</h1>
-              {error && <p style={{ color: "red" }}>Error: {error}</p>}
-              <ul>
-                {applications.map((app) => (
-                  <li key={app.id}>
-                    <strong>{app.job_title}</strong> - Applied at:{" "}
-                    <strong>{getCompanyName(app.company_id)}</strong> on{" "}
-                    {new Date(app.date_applied).toLocaleDateString()} - Status ID:{" "}
-                    {app.status_id} - Notes: {app.notes}
-                    <button onClick={() => handleEdit(app)}>Edit</button>
-                    <button onClick={() => handleDelete(app.id)}>Delete</button>
-                  </li>
-                ))}
-              </ul>
+        {/* Navigation Bar */}
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Job Tracker
+            </Typography>
+            <Button color="inherit" component={Link} to="/">
+              Home
+            </Button>
+            <Button color="inherit" component={Link} to="/report">
+              Report
+            </Button>
+          </Toolbar>
+        </AppBar>
 
-              <h2>{editingApplication ? "Edit" : "Add"} a Job Application</h2>
-              <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-                <select name="company_id" value={newApplication.company_id} onChange={handleChange} required>
-                  <option value="">Select Company</option>
-                  {companies.map((company) => (
-                    <option key={company.id} value={company.id}>
-                      {company.name}
-                    </option>
-                  ))}
-                </select>
-                <input type="text" name="job_title" placeholder="Job Title" value={newApplication.job_title} onChange={handleChange} required />
-                <input type="number" name="status_id" placeholder="Status ID" value={newApplication.status_id} onChange={handleChange} required />
-                <input type="text" name="notes" placeholder="Notes" value={newApplication.notes} onChange={handleChange} />
-                <button type="submit">{editingApplication ? "Update" : "Add"} Application</button>
-              </form>
-            </div>
-          } />
-        </Routes>
+        <Container sx={{ marginTop: 4 }}>
+          <Routes>
+            <Route path="/report" element={<Report />} />
+            <Route
+              path="/"
+              element={
+                <Grid container spacing={4}>
+                  {/* Applications List */}
+                  <Grid item xs={12} md={6}>
+                    <Paper elevation={3} sx={{ padding: 3 }}>
+                      <Typography variant="h5" gutterBottom>
+                        Applications
+                      </Typography>
+                      {error && <Typography color="error">{error}</Typography>}
+                      <List>
+                        {applications.map((app) => (
+                          <ListItem
+                            key={app.id}
+                            secondaryAction={
+                              <>
+                                <IconButton edge="end" onClick={() => handleEdit(app)}>
+                                  <Edit />
+                                </IconButton>
+                                <IconButton edge="end" onClick={() => handleDelete(app.id)}>
+                                  <Delete />
+                                </IconButton>
+                              </>
+                            }
+                          >
+                            <ListItemText
+                              primary={`${app.job_title} at ${getCompanyName(app.company_id)}`}
+                              secondary={`Applied on ${new Date(app.date_applied).toLocaleDateString()} - Status: ${app.status_id}`}
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Paper>
+                  </Grid>
+
+                  {/* Add/Edit Application Form */}
+                  <Grid item xs={12} md={6}>
+                    <Paper elevation={3} sx={{ padding: 3 }}>
+                      <Typography variant="h5" gutterBottom>
+                        {editingApplication ? "Edit" : "Add"} Application
+                      </Typography>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleSubmit();
+                        }}
+                      >
+                        <FormControl fullWidth margin="normal">
+                          <InputLabel>Company</InputLabel>
+                          <Select
+                            name="company_id"
+                            value={newApplication.company_id}
+                            onChange={handleChange}
+                            required
+                          >
+                            <MenuItem value="">
+                              <em>Select Company</em>
+                            </MenuItem>
+                            {companies.map((company) => (
+                              <MenuItem key={company.id} value={company.id}>
+                                {company.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <TextField
+                          fullWidth
+                          label="Job Title"
+                          name="job_title"
+                          value={newApplication.job_title}
+                          onChange={handleChange}
+                          margin="normal"
+                          required
+                        />
+                        <FormControl fullWidth margin="normal">
+                          <InputLabel>Status</InputLabel>
+                          <Select
+                            name="status_id"
+                            value={newApplication.status_id}
+                            onChange={handleChange}
+                            required
+                          >
+                            <MenuItem value="">
+                              <em>Select Status</em>
+                            </MenuItem>
+                            {statuses.map((status) => (
+                              <MenuItem key={status.id} value={status.id}>
+                                {status.status_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <TextField
+                          fullWidth
+                          label="Notes"
+                          name="notes"
+                          value={newApplication.notes}
+                          onChange={handleChange}
+                          margin="normal"
+                          multiline
+                          rows={4}
+                        />
+                        <Button variant="contained" color="primary" type="submit" fullWidth>
+                          {editingApplication ? "Update" : "Add"} Application
+                        </Button>
+                      </form>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              }
+            />
+          </Routes>
+        </Container>
       </div>
     </Router>
   );

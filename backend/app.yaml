@@ -1,0 +1,13 @@
+runtime: nodejs20
+env: standard
+instance_class: F2
+entrypoint: npm start
+
+handlers:
+  - url: /.*
+    script: auto
+env_variables:
+  DB_HOST: "34.9.87.219" # Replace with your Cloud SQL Public IP
+  DB_USER: "root"
+  DB_PASSWORD: "Gyashaswini@123" # Replace with your Cloud SQL root password
+  DB_NAME: "job_tracker"

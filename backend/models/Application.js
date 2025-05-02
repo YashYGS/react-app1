@@ -3,7 +3,7 @@ import sequelize from "../db.js";
 import Company from "./Company.js";
 
 const Application = sequelize.define(
-  "Application",
+  "applications",
   {
     job_title: {
       type: DataTypes.STRING,

@@ -13,15 +13,16 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 app.use(express.json());
-const cors = require("cors");
+app.use(cors());
+// const cors = require("cors");
 
-app.use(
-  cors({
-    origin: "https://react-app1-v4ab.onrender.com", // Replace with your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://react-app1-v4ab.onrender.com", // Replace with your frontend URL
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
 
 // Sync Sequelize models
 sequelize.sync({ alter: true }).then(() => {

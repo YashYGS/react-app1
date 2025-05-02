@@ -66,7 +66,11 @@ app.get("/applications", (req, res) => {
 app.post("/applications", async (req, res) => {
   const { company_id, job_title, status_id, notes } = req.body;
 
+  console.log("Request payload:", req.body); // Log the incoming request payload
+
   if (!company_id || !job_title || !status_id) {
+    console.error("Missing required fields:", { company_id, job_title, status_id });
+   
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -113,6 +117,9 @@ app.put("/applications/:id", async (req, res) => {
   const { id } = req.params;
   const { company_id, job_title, status_id, notes } = req.body;
 
+  console.log("Request payload:", req.body); // Log the incoming request payload
+  console.log("Request params:", req.params); // Log the request params
+
   if (!company_id || !job_title || !status_id) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -121,12 +128,16 @@ app.put("/applications/:id", async (req, res) => {
   try {
     const application = await Application.findByPk(id, { transaction });
     if (!application) {
+      console.error("Application not found:", id);
+     
       await transaction.rollback();
       return res.status(404).send("Application not found");
     }
 
     await application.update({ company_id, job_title, status_id, notes }, { transaction });
     await transaction.commit();
+    console.log("Application updated successfully:", application);
+   
     res.status(200).json({ message: "Application updated successfully!" });
   } catch (err) {
     await transaction.rollback();

@@ -13,7 +13,15 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 app.use(express.json());
-app.use(cors());
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "https://react-app1-v4ab.onrender.com", // Replace with your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // Sync Sequelize models
 sequelize.sync({ alter: true }).then(() => {
@@ -69,6 +77,7 @@ app.post("/applications", async (req, res) => {
       { transaction }
     );
     await transaction.commit();
+    console.log("Application added successfully:", application);
     res.status(201).json({ message: "Application added successfully!", id: application.id });
   } catch (err) {
     await transaction.rollback();

@@ -37,6 +37,7 @@ type Company = {
 };
 const API_URL = "https://job-application-tracker-ttwh.onrender.com";
 
+
 function App() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -49,6 +50,8 @@ function App() {
     status_id: "",
     notes: "",
   });
+  const API_URL = "https://job-application-tracker-ttwh.onrender.com";
+
 
   useEffect(() => {
     fetch(`${API_URL}/applications`)

@@ -36,6 +36,8 @@ type Status = {
   id: number;
   status_name: string;
 };
+const API_URL = "https://job-application-tracker-ttwh.onrender.com";
+
 
 const Report: React.FC = () => {
   const [startDate, setStartDate] = useState<string>("");
@@ -45,14 +47,16 @@ const Report: React.FC = () => {
   const [reportData, setReportData] = useState<ReportData[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [statuses, setStatuses] = useState<Status[]>([]);
+  const API_URL = "https://job-application-tracker-ttwh.onrender.com";
+
 
   useEffect(() => {
-    fetch("http://localhost:5000/companies")
+    fetch(`${API_URL}/companies`)
       .then((response) => response.json())
       .then((data) => setCompanies(data))
       .catch((error) => console.error("Error fetching companies:", error));
 
-    fetch("http://localhost:5000/statuses")
+    fetch(`${API_URL}/statuses`)
       .then((response) => response.json())
       .then((data) => setStatuses(data))
       .catch((error) => console.error("Error fetching statuses:", error));
@@ -66,7 +70,7 @@ const Report: React.FC = () => {
       ...(statusId && { status_id: statusId }),
     });
 
-    fetch(`http://localhost:5000/applications/filter?${queryParams.toString()}`)
+    fetch(`${API_URL}/applications/filter?${queryParams.toString()}`)
       .then((response) => response.json())
       .then((data) => setReportData(data))
       .catch((error) => console.error("Error fetching report data:", error));

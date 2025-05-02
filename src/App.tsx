@@ -35,6 +35,7 @@ type Company = {
   id: number;
   name: string;
 };
+const API_URL = "https://job-application-tracker-ttwh.onrender.com";
 
 function App() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -50,7 +51,7 @@ function App() {
   });
 
   useEffect(() => {
-    fetch("http://localhost:5000/applications")
+    fetch(`${API_URL}/applications`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -60,7 +61,7 @@ function App() {
       .then((data) => setApplications(data))
       .catch((error) => setError(error.message));
 
-    fetch("http://localhost:5000/companies")
+    fetch(`${API_URL}/companies`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -70,7 +71,7 @@ function App() {
       .then((data) => setCompanies(data))
       .catch((error) => console.error("Error fetching companies:", error));
 
-    fetch("http://localhost:5000/statuses")
+    fetch(`${API_URL}/statuses`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -105,8 +106,8 @@ function App() {
     };
 
     const url = editingApplication
-      ? `http://localhost:5000/applications/${editingApplication.id}`
-      : "http://localhost:5000/applications";
+      ? `${API_URL}/applications/${editingApplication.id}`
+      : `${API_URL}/applications`;
     const method = editingApplication ? "PUT" : "POST";
 
     fetch(url, {
@@ -159,7 +160,7 @@ function App() {
   };
 
   const handleDelete = (id: number) => {
-    fetch(`http://localhost:5000/applications/${id}`, {
+    fetch(`${API_URL}/applications/${id}`, {
       method: "DELETE",
     })
       .then((response) => {

@@ -107,6 +107,41 @@ function App() {
       company_id: Number(newApplication.company_id),
       status_id: Number(newApplication.status_id),
     };
+  
+    fetch(`${API_URL}/applications`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formattedApplication),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setApplications([
+          ...applications,
+          { ...formattedApplication, id: data.id, date_applied: new Date().toISOString() },
+        ]);
+        setNewApplication({
+          company_id: "",
+          job_title: "",
+          status_id: "",
+          notes: "",
+        });
+      })
+      .catch((error) => console.error("Error submitting application:", error));
+  };
+
+  const handleSubmit2 = () => {
+    const formattedApplication = {
+      ...newApplication,
+      company_id: Number(newApplication.company_id),
+      status_id: Number(newApplication.status_id),
+    };
 
     const url = editingApplication
       ? `${API_URL}/applications/${editingApplication.id}`

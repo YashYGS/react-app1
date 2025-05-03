@@ -33,7 +33,7 @@ sequelize.sync({ alter: true }).then(() => {
 const db = mysql.createConnection({
   host: "34.9.87.219",
   user: "root", 
-  password: "Hello@111",
+  password: "Gyashaswini@123",
   database: "job_tracker",
 });
 
